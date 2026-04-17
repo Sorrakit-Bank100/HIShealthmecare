@@ -1,0 +1,36 @@
+{
+  "resourceType": "Patient",
+  "identifier": [
+    {
+      "use": "official",
+      "system": "https://his.hospital.th/patient-id",
+      "value": "HN-2024-001"
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "use": "official",
+      "family": "สมชาย",
+      "given": ["นาย"]
+    }
+  ],
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "0812345678",
+      "use": "mobile"
+    }
+  ],
+  "gender": "male",
+  "birthDate": "1990-05-20",
+  "address": [
+    {
+      "use": "home",
+      "line": ["123 ถนนพหลโยธิน"],
+      "city": "กรุงเทพมหานคร",
+      "postalCode": "10900",
+      "country": "TH"
+    }
+  ]
+}

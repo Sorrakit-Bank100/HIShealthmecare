@@ -1,0 +1,42 @@
+{
+  "resourceType": "Encounter",
+  "status": "in-progress",
+  "class": {
+    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+    "code": "AMB",
+    "display": "ambulatory"
+  },
+  "type": [
+    {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "11429006",
+          "display": "Consultation"
+        }
+      ]
+    }
+  ],
+  "subject": {
+    "reference": "Patient/REPLACE_WITH_PATIENT_ID",
+    "display": "นาย สมชาย"
+  },
+  "period": {
+    "start": "2024-04-16T08:00:00+07:00"
+  },
+  "reasonCode": [
+    {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "386661006",
+          "display": "Fever"
+        }
+      ]
+    }
+  ],
+  "serviceProvider": {
+    "reference": "Organization/his-hospital",
+    "display": "HIS Hospital"
+  }
+}
