@@ -26,28 +26,101 @@ router = APIRouter(prefix="/Patient", tags=["Patient"])
 
 def _extract_patient_fields(resource: dict) -> dict:
     """Extract indexed fields from a FHIR Patient resource dict."""
-    family = None
-    given = None
-    identifier_val = None
+    fields = {
+        "hospital_code": None,
+        "cid": None,
+        "pid": None,
+        "hid": None,
+        "prename": None,
+        "given_name": None,
+        "family_name": None,
+        "identifier": None,
+        "gender": resource.get("gender"),
+        "birth_date": resource.get("birthDate"),
+        "married_status": None,
+        "occupation": None,
+        "blood_group": None,
+        "phone": None,
+        "nation": None,
+        "race": None,
+        "religion": None,
+        "education": None,
+        "blood_group_rh": None,
+        "active": resource.get("active", True),
+    }
 
     if resource.get("name"):
         name = resource["name"][0]
-        family = name.get("family")
+        fields["family_name"] = name.get("family")
+        
         given_list = name.get("given", [])
-        given = given_list[0] if given_list else None
+        if given_list:
+            fields["given_name"] = " ".join(given_list)
+            
+        prefix_list = name.get("prefix", [])
+        if prefix_list:
+            fields["prename"] = " ".join(prefix_list)
 
     if resource.get("identifier"):
-        ident = resource["identifier"][0]
-        identifier_val = ident.get("value")
+        fields["identifier"] = resource["identifier"][0].get("value")
+        for ident in resource["identifier"]:
+            val = ident.get("value")
+            if not val:
+                continue
+            
+            system = ident.get("system", "").lower()
+            if "cid" in system or "citizen" in system or "national" in system:
+                fields["cid"] = val
+            elif "hn" in system or "hospital" in system:
+                fields["hospital_code"] = val
+            elif "pid" in system or "patient" in system:
+                fields["pid"] = val
+            elif "hid" in system or "house" in system:
+                fields["hid"] = val
 
-    return {
-        "family_name": family,
-        "given_name": given,
-        "gender": resource.get("gender"),
-        "birth_date": resource.get("birthDate"),
-        "identifier": identifier_val,
-        "active": resource.get("active", True),
-    }
+    if resource.get("telecom"):
+        for t in resource["telecom"]:
+            if t.get("system") == "phone":
+                fields["phone"] = t.get("value")
+                break
+        if not fields["phone"]:
+            fields["phone"] = resource["telecom"][0].get("value")
+
+    if resource.get("maritalStatus"):
+        ms = resource["maritalStatus"]
+        if ms.get("text"):
+            fields["married_status"] = ms.get("text")
+        elif ms.get("coding") and len(ms["coding"]) > 0:
+            fields["married_status"] = ms["coding"][0].get("code") or ms["coding"][0].get("display")
+
+    if resource.get("extension"):
+        for ext in resource["extension"]:
+            url = ext.get("url", "").lower()
+            val = ext.get("valueString") or ext.get("valueCode")
+            if not val and ext.get("valueCodeableConcept"):
+                cc = ext.get("valueCodeableConcept")
+                val = cc.get("text") or (cc.get("coding")[0].get("display") if cc.get("coding") else None)
+            
+            if not val:
+                continue
+                
+            if "nation" in url or "nationality" in url:
+                fields["nation"] = val
+            elif "race" in url:
+                fields["race"] = val
+            elif "religion" in url:
+                fields["religion"] = val
+            elif "education" in url:
+                fields["education"] = val
+            elif "occupation" in url:
+                fields["occupation"] = val
+            elif "blood" in url:
+                if "rh" in url:
+                    fields["blood_group_rh"] = val
+                else:
+                    fields["blood_group"] = val
+
+    return fields
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, response_model=dict)

@@ -3,53 +3,33 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, UserCircle, Edit2, Trash2, Users } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { Patient, getPatients, deletePatient } from '@/lib/api';
+import { deletePatient, Patient } from '@/lib/api';
 import PatientModal from '@/components/PatientModal';
+import { useHIS } from '@/context/HISContext';
 
 export default function PatientsPage() {
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const { patients, patientsLoading, fetchPatients, refreshPatients } = useHIS();
 
+  const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [patientToEdit, setPatientToEdit] = useState<Patient | null>(null);
 
-  const fetchPatients = async (query = '') => {
-    setLoading(true);
-    try {
-      const data = await getPatients(query);
-      setPatients(data.entry?.map((e) => e.resource) || []);
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to load patients');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    // Initial fetch
-    fetchPatients();
-  }, []);
-
-  // Debounced search
+  // Debounced search via context fetch
   useEffect(() => {
     const handler = setTimeout(() => {
-      fetchPatients(searchQuery);
+      fetchPatients(searchQuery || undefined);
     }, 500);
     return () => clearTimeout(handler);
-  }, [searchQuery]);
+  }, [searchQuery, fetchPatients]);
 
   const handleDelete = async (id: string, name: string) => {
-    if (confirm(`Are you sure you want to delete patient ${name}?`)) {
-      try {
-        await deletePatient(id);
-        toast.success('Patient deleted successfully');
-        fetchPatients(searchQuery);
-      } catch (error) {
-        console.error(error);
-        toast.error('Failed to delete patient');
-      }
+    if (!confirm(`Are you sure you want to delete patient ${name}?`)) return;
+    try {
+      await deletePatient(id);
+      toast.success('Patient deleted successfully');
+      refreshPatients();
+    } catch {
+      toast.error('Failed to delete patient');
     }
   };
 
@@ -65,7 +45,7 @@ export default function PatientsPage() {
 
   return (
     <div className="flex h-full flex-col p-8">
-      {/* Header section */}
+      {/* Header */}
       <div className="flex items-center justify-between pb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-[var(--foreground)]">Patients</h1>
@@ -101,9 +81,9 @@ export default function PatientsPage() {
           </div>
         </div>
 
-        {/* Patient Grid / List */}
+        {/* Patient Grid */}
         <div className="flex-1 overflow-y-auto p-6">
-          {loading ? (
+          {patientsLoading ? (
             <div className="flex h-full items-center justify-center text-[var(--sidebar-fg)]">
               Loading patients...
             </div>
@@ -122,7 +102,6 @@ export default function PatientsPage() {
                 const given = name?.given?.join(' ') || '';
                 const family = name?.family || '';
                 const fullName = `${given} ${family}`.trim() || 'Unknown Name';
-
                 const identifier = patient.identifier?.[0]?.value || 'No ID';
 
                 return (
@@ -143,7 +122,6 @@ export default function PatientsPage() {
                         </div>
                       </div>
 
-                      {/* Action buttons (hidden by default, shown on hover relative to group) */}
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                         <button
                           onClick={() => handleEdit(patient)}
@@ -184,7 +162,7 @@ export default function PatientsPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         patientToEdit={patientToEdit}
-        onSuccess={() => fetchPatients(searchQuery)}
+        onSuccess={refreshPatients}
       />
     </div>
   );

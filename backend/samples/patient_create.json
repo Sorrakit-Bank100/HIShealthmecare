@@ -3,16 +3,32 @@
   "identifier": [
     {
       "use": "official",
-      "system": "https://his.hospital.th/patient-id",
+      "system": "https://his.hospital.th/hn",
       "value": "HN-2024-001"
+    },
+    {
+      "use": "secondary",
+      "system": "https://his.hospital.th/cid",
+      "value": "1234567890123"
+    },
+    {
+      "use": "secondary",
+      "system": "https://his.hospital.th/pid",
+      "value": "PID-00456"
+    },
+    {
+      "use": "secondary",
+      "system": "https://his.hospital.th/hid",
+      "value": "HID-789"
     }
   ],
   "active": true,
   "name": [
     {
       "use": "official",
+      "prefix": ["นาย"],
       "family": "สมชาย",
-      "given": ["นาย"]
+      "given": ["ใจดี"]
     }
   ],
   "telecom": [
@@ -31,6 +47,46 @@
       "city": "กรุงเทพมหานคร",
       "postalCode": "10900",
       "country": "TH"
+    }
+  ],
+  "maritalStatus": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+        "code": "M",
+        "display": "Married"
+      }
+    ],
+    "text": "Married"
+  },
+  "extension": [
+    {
+      "url": "https://his.hospital.th/fhir/StructureDefinition/nationality",
+      "valueString": "Thai"
+    },
+    {
+      "url": "https://his.hospital.th/fhir/StructureDefinition/race",
+      "valueString": "Thai"
+    },
+    {
+      "url": "https://his.hospital.th/fhir/StructureDefinition/religion",
+      "valueString": "Buddhism"
+    },
+    {
+      "url": "https://his.hospital.th/fhir/StructureDefinition/education",
+      "valueString": "Bachelor's Degree"
+    },
+    {
+      "url": "https://his.hospital.th/fhir/StructureDefinition/occupation",
+      "valueString": "Software Engineer"
+    },
+    {
+      "url": "https://his.hospital.th/fhir/StructureDefinition/blood-group",
+      "valueCode": "O"
+    },
+    {
+      "url": "https://his.hospital.th/fhir/StructureDefinition/blood-group-rh",
+      "valueCode": "+"
     }
   ]
 }
