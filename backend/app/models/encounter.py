@@ -28,6 +28,9 @@ class Encounter(Base):
     type_code: Mapped[str | None] = mapped_column(String(128), nullable=True)
     period_start: Mapped[str | None] = mapped_column(String(30), nullable=True)
     period_end: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    ward: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    doctor_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    diagnosis: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     # Full FHIR JSON payload
     fhir_resource: Mapped[dict] = mapped_column(JSONB, nullable=False)
