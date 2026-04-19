@@ -1,6 +1,26 @@
 // his-app/lib/api.ts
 const API_BASE_URL = 'http://localhost:8000/fhir';
 
+/** Reads the error body from a failed response and throws a detailed Error. */
+async function throwIfError(res: Response, context: string): Promise<void> {
+  if (res.ok) return;
+  let detail = `HTTP ${res.status}`;
+  try {
+    const body = await res.json();
+    // FastAPI wraps validation errors in { detail: "..." } or { detail: [{...}] }
+    if (body?.detail) {
+      detail = typeof body.detail === 'string'
+        ? body.detail
+        : JSON.stringify(body.detail);
+    }
+  } catch {
+    // body wasn't JSON, use status text
+    detail = res.statusText || detail;
+  }
+  throw new Error(`${context}: ${detail}`);
+}
+
+
 // ─── Patient ──────────────────────────────────────────────────────────────────
 
 export interface Patient {
@@ -76,7 +96,7 @@ export const createPatient = async (patient: Patient): Promise<Patient> => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(patient),
   });
-  if (!res.ok) throw new Error('Failed to create patient');
+  await throwIfError(res, 'Create Patient');
   return res.json();
 };
 
@@ -86,13 +106,13 @@ export const updatePatient = async (id: string, patient: Patient): Promise<Patie
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(patient),
   });
-  if (!res.ok) throw new Error('Failed to update patient');
+  await throwIfError(res, 'Update Patient');
   return res.json();
 };
 
 export const deletePatient = async (id: string): Promise<void> => {
   const res = await fetch(`${API_BASE_URL}/Patient/${id}`, { method: 'DELETE' });
-  if (!res.ok) throw new Error('Failed to delete patient');
+  await throwIfError(res, 'Delete Patient');
 };
 
 // ─── Encounter ────────────────────────────────────────────────────────────────
@@ -150,7 +170,7 @@ export const createEncounter = async (encounter: Encounter): Promise<Encounter> 
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(encounter),
   });
-  if (!res.ok) throw new Error('Failed to create encounter');
+  await throwIfError(res, 'Create Encounter');
   return res.json();
 };
 
@@ -160,13 +180,13 @@ export const updateEncounter = async (id: string, encounter: Encounter): Promise
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(encounter),
   });
-  if (!res.ok) throw new Error('Failed to update encounter');
+  await throwIfError(res, 'Update Encounter');
   return res.json();
 };
 
 export const deleteEncounter = async (id: string): Promise<void> => {
   const res = await fetch(`${API_BASE_URL}/Encounter/${id}`, { method: 'DELETE' });
-  if (!res.ok) throw new Error('Failed to delete encounter');
+  await throwIfError(res, 'Delete Encounter');
 };
 
 // ─── Observation ──────────────────────────────────────────────────────────────
@@ -226,7 +246,7 @@ export const createObservation = async (obs: Observation): Promise<Observation> 
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(obs),
   });
-  if (!res.ok) throw new Error('Failed to create observation');
+  await throwIfError(res, 'Create Observation');
   return res.json();
 };
 
@@ -236,11 +256,11 @@ export const updateObservation = async (id: string, obs: Observation): Promise<O
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(obs),
   });
-  if (!res.ok) throw new Error('Failed to update observation');
+  await throwIfError(res, 'Update Observation');
   return res.json();
 };
 
 export const deleteObservation = async (id: string): Promise<void> => {
   const res = await fetch(`${API_BASE_URL}/Observation/${id}`, { method: 'DELETE' });
-  if (!res.ok) throw new Error('Failed to delete observation');
+  await throwIfError(res, 'Delete Observation');
 };

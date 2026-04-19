@@ -16,7 +16,7 @@ from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from fhir.resources.encounter import Encounter as FHIREncounter
+from fhir.resources.R4B.encounter import Encounter as FHIREncounter
 
 from app.core.database import get_db
 from app.models.encounter import Encounter
@@ -44,6 +44,14 @@ def _extract_encounter_fields(resource: dict) -> dict:
 
     period = resource.get("period", {})
 
+    ward = None
+    if resource.get("location") and len(resource["location"]) > 0:
+        ward = resource["location"][0].get("location", {}).get("display")
+
+    doctor_name = None
+    if resource.get("participant") and len(resource["participant"]) > 0:
+        doctor_name = resource["participant"][0].get("individual", {}).get("display")
+
     return {
         "patient_id": patient_id,
         "status": resource.get("status"),
@@ -51,6 +59,8 @@ def _extract_encounter_fields(resource: dict) -> dict:
         "type_code": type_code,
         "period_start": period.get("start") if period else None,
         "period_end": period.get("end") if period else None,
+        "ward": ward,
+        "doctor_name": doctor_name,
     }
 
 

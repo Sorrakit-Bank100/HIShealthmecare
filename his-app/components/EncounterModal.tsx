@@ -113,8 +113,9 @@ export default function EncounterModal({ isOpen, onClose, encounterToEdit, onSuc
       onSuccess();
       onClose();
     } catch (err) {
-      console.error(err);
-      toast.error('Failed to save encounter. Check server connection.');
+      const msg = err instanceof Error ? err.message : 'Failed to save encounter';
+      console.error('[EncounterModal]', err);
+      toast.error(msg, { duration: 6000 });
     } finally {
       setLoading(false);
     }

@@ -17,7 +17,7 @@ from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from fhir.resources.observation import Observation as FHIRObservation
+from fhir.resources.R4B.observation import Observation as FHIRObservation
 
 from app.core.database import get_db
 from app.models.observation import Observation

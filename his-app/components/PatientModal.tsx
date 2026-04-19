@@ -166,8 +166,9 @@ export default function PatientModal({ isOpen, onClose, patientToEdit, onSuccess
       onSuccess();
       onClose();
     } catch (error) {
-      console.error(error);
-      toast.error('Failed to save patient. Check connection.');
+      const msg = error instanceof Error ? error.message : 'Failed to save patient';
+      console.error('[PatientModal]', error);
+      toast.error(msg, { duration: 6000 });
     } finally {
       setLoading(false);
     }

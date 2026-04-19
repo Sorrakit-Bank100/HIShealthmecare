@@ -163,8 +163,9 @@ export default function ObservationModal({ isOpen, onClose, observationToEdit, o
       onSuccess();
       onClose();
     } catch (err) {
-      console.error(err);
-      toast.error('Failed to save observation.');
+      const msg = err instanceof Error ? err.message : 'Failed to save observation';
+      console.error('[ObservationModal]', err);
+      toast.error(msg, { duration: 6000 });
     } finally {
       setLoading(false);
     }

@@ -16,7 +16,7 @@ from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_
-from fhir.resources.patient import Patient as FHIRPatient
+from fhir.resources.R4B.patient import Patient as FHIRPatient
 
 from app.core.database import get_db
 from app.models.patient import Patient

@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Users, Activity, FileText, Settings, HeartPulse } from 'lucide-react';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: HeartPulse },
+  { name: 'Dashboard', href: '/dashboard', icon: HeartPulse },
   { name: 'Patients', href: '/patients', icon: Users },
   { name: 'Encounters', href: '/encounters', icon: Activity },
   { name: 'Observations', href: '/observations', icon: FileText },
@@ -29,21 +29,19 @@ export default function Sidebar() {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const isDashboard = item.href === '/';
           const reallyActive = isDashboard ? pathname === '/' : isActive;
-          
+
           return (
             <Link
               key={item.name}
               href={item.href}
-              className={`group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 ease-in-out ${
-                reallyActive
+              className={`group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 ease-in-out ${reallyActive
                   ? 'bg-[var(--sidebar-active)] text-[var(--sidebar-active-fg)]'
                   : 'text-[var(--sidebar-fg)] hover:bg-[var(--sidebar-active)] hover:text-[var(--sidebar-active-fg)]'
-              }`}
+                }`}
             >
               <item.icon
-                className={`h-5 w-5 flex-shrink-0 ${
-                  reallyActive ? 'text-[var(--sidebar-active-fg)]' : 'text-[var(--sidebar-fg)] group-hover:text-[var(--sidebar-active-fg)]'
-                }`}
+                className={`h-5 w-5 flex-shrink-0 ${reallyActive ? 'text-[var(--sidebar-active-fg)]' : 'text-[var(--sidebar-fg)] group-hover:text-[var(--sidebar-active-fg)]'
+                  }`}
               />
               {item.name}
             </Link>
