@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { Encounter, createEncounter, updateEncounter } from '@/lib/api';
+import { Encounter, createEncounter, updateEncounter, getPatient } from '@/lib/api';
 import { useHIS } from '@/context/HISContext';
 
 interface EncounterModalProps {
@@ -83,6 +83,16 @@ export default function EncounterModal({ isOpen, onClose, encounterToEdit, onSuc
     setLoading(true);
 
     try {
+      if (f.patientId) {
+        try {
+          await getPatient(f.patientId);
+        } catch (err) {
+          toast.error('Patient UID does not exist in the database!');
+          setLoading(false);
+          return;
+        }
+      }
+
       const cls = ENCOUNTER_CLASS.find(c => c.code === f.encounterClass)!;
       const payload: Encounter = {
         resourceType: 'Encounter',
@@ -155,7 +165,15 @@ export default function EncounterModal({ isOpen, onClose, encounterToEdit, onSuc
 
               <div className="space-y-1 md:col-span-2">
                 <label className={labelCls}>Patient ID <span className="text-red-500">*</span></label>
-                <input id="enc-patientId" type="text" required value={f.patientId} onChange={set('patientId')} className={inputCls} placeholder="UUID of the patient" />
+                <input id="enc-patientId" type="text" required value={f.patientId} onChange={set('patientId')} className={inputCls} placeholder="UUID of the patient" list="patient-suggestions" />
+                <datalist id="patient-suggestions">
+                  {patients.map(p => {
+                    const firstName = p.name?.[0]?.given?.join(' ') || '';
+                    const lastName = p.name?.[0]?.family || '';
+                    const displayName = `${firstName} ${lastName}`.trim() || 'Unknown Name';
+                    return <option key={p.id} value={p.id}>{p.identifier?.[2]?.value} {displayName}</option>;
+                  })}
+                </datalist>
                 <p className="text-xs text-[var(--sidebar-fg)]">Enter the patient's UUID (from Patients page)</p>
               </div>
 

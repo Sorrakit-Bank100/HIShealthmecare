@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { Observation, createObservation, updateObservation } from '@/lib/api';
+import { useHIS } from '@/context/HISContext';
 
 interface ObservationModalProps {
   isOpen: boolean;
@@ -51,6 +52,7 @@ export default function ObservationModal({ isOpen, onClose, observationToEdit, o
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(emptyForm);
   const [components, setComponents] = useState<ComponentRow[]>([]);
+  const { patients, refreshPatients } = useHIS();
 
   useEffect(() => {
     if (observationToEdit) {
@@ -133,13 +135,13 @@ export default function ObservationModal({ isOpen, onClose, observationToEdit, o
         effectiveDateTime: f.effectiveDateTime ? `${f.effectiveDateTime}:00+07:00` : undefined,
         ...(f.valueType === 'quantity' && f.valueNumber !== ''
           ? {
-              valueQuantity: {
-                value: parseFloat(f.valueNumber),
-                unit: f.valueUnit || undefined,
-                system: 'http://unitsofmeasure.org',
-                code: f.valueUnit || undefined,
-              },
-            }
+            valueQuantity: {
+              value: parseFloat(f.valueNumber),
+              unit: f.valueUnit || undefined,
+              system: 'http://unitsofmeasure.org',
+              code: f.valueUnit || undefined,
+            },
+          }
           : { valueString: f.valueString || undefined }),
         component: components.length > 0 ? components.map(c => ({
           code: {
@@ -197,10 +199,20 @@ export default function ObservationModal({ isOpen, onClose, observationToEdit, o
               {/* ── References ── */}
               <p className={sectionTitle}>References</p>
 
-              <div className="space-y-1">
+              <div className="space-y-1 md:col-span-2">
                 <label className={labelCls}>Patient ID <span className="text-red-500">*</span></label>
-                <input id="obs-patientId" type="text" required value={f.patientId} onChange={set('patientId')} className={inputCls} placeholder="Patient UUID" />
+                <input id="enc-patientId" type="text" required value={f.patientId} onChange={set('patientId')} className={inputCls} placeholder="UUID of the patient" list="patient-suggestions" />
+                <datalist id="patient-suggestions">
+                  {patients.map(p => {
+                    const firstName = p.name?.[0]?.given?.join(' ') || '';
+                    const lastName = p.name?.[0]?.family || '';
+                    const displayName = `${firstName} ${lastName}`.trim() || 'Unknown Name';
+                    return <option key={p.id} value={p.id}>{p.identifier?.[2]?.value} {displayName}</option>;
+                  })}
+                </datalist>
+                <p className="text-xs text-[var(--sidebar-fg)]">Enter the patient's UUID (from Patients page)</p>
               </div>
+
               <div className="space-y-1">
                 <label className={labelCls}>Encounter ID</label>
                 <input id="obs-encounterId" type="text" value={f.encounterId} onChange={set('encounterId')} className={inputCls} placeholder="Encounter UUID (optional)" />
