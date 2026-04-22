@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { Encounter, createEncounter, updateEncounter } from '@/lib/api';
+import { useHIS } from '@/context/HISContext';
 
 interface EncounterModalProps {
   isOpen: boolean;
@@ -19,6 +20,8 @@ const ENCOUNTER_CLASS = [
   { code: 'IMP', display: 'Inpatient (IPD)' },
   { code: 'OBSENC', display: 'Observation' },
   { code: 'SS', display: 'Short Stay' },
+  { code: 'VR', display: 'Virtual' },
+  { code: 'HH', display: 'Home Health' },
 ];
 const CLASS_SYSTEM = 'http://terminology.hl7.org/CodeSystem/v3-ActCode';
 
@@ -40,6 +43,8 @@ const emptyForm = {
 export default function EncounterModal({ isOpen, onClose, encounterToEdit, onSuccess }: EncounterModalProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(emptyForm);
+  const { patients, refreshPatients } = useHIS();
+
 
   useEffect(() => {
     if (encounterToEdit) {

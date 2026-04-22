@@ -118,7 +118,7 @@ export default function EncountersPage() {
                 const typeText = enc.type?.[0]?.text ?? enc.type?.[0]?.coding?.[0]?.display;
 
                 return (
-                  <div key={enc.id} className="group relative rounded-xl border border-[var(--border)] p-5 hover:border-primary/50 hover:shadow-md transition-all duration-200">
+                  <div onClick={() => { setEncounterToEdit(enc); setIsModalOpen(true); }} key={enc.id} className="group relative rounded-xl border border-[var(--border)] p-5 hover:border-primary/50 hover:shadow-md transition-all duration-200 hover">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start gap-4 flex-1 min-w-0">
                         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--sidebar-active)] text-primary flex-shrink-0">

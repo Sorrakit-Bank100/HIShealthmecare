@@ -3,10 +3,10 @@
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
-  
+
   --primary: #0ea5e9;
   --primary-foreground: #ffffff;
-  
+
   --sidebar-bg: #ffffff;
   --sidebar-fg: #64748b;
   --sidebar-active: #f1f5f9;
@@ -36,10 +36,10 @@
   :root {
     --background: #0f172a;
     --foreground: #f8fafc;
-    
+
     --primary: #0ea5e9;
     --primary-foreground: #ffffff;
-    
+
     --sidebar-bg: #1e293b;
     --sidebar-fg: #94a3b8;
     --sidebar-active: #334155;
