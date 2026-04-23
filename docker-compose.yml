@@ -17,7 +17,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-his_user} -d ${POSTGRES_DB:-his_db}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-his_user} -d ${POSTGRES_DB:-his_db}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -67,6 +67,42 @@ services:
       - ./docker/pgadmin/servers.json:/pgadmin4/servers.json
     depends_on:
       - postgres
+    networks:
+      - his_network
+
+  # ─────────────────────────────────────────────────────────────
+  # his-app — Next.js Frontend (Hospital One+)
+  # ─────────────────────────────────────────────────────────────
+  his-app:
+    build:
+      context: ./his-app
+      dockerfile: Dockerfile
+    container_name: his_app
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - his_network
+
+  # ─────────────────────────────────────────────────────────────
+  # his-2 — Next.js Frontend (Hospital Two+)
+  # ─────────────────────────────────────────────────────────────
+  his-2:
+    build:
+      context: ./his-2
+      dockerfile: Dockerfile
+    container_name: his_2
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000
+    ports:
+      - "3001:3001"
+    depends_on:
+      - backend
     networks:
       - his_network
 

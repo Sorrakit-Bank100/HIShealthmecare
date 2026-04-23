@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  /* Rich Dark Medical/Health Theme (Default) */
+  --background: #022c22;
+  /* Emerald 950 */
+  --foreground: #f8fafc;
+
+  --primary: #10b981;
+  /* Emerald 500 */
+  --primary-foreground: #ffffff;
+
+  --sidebar-bg: #064e3b;
+  /* Emerald 900 */
+  --sidebar-fg: #94a3b8;
+  --sidebar-active: #065f46;
+  /* Emerald 800 */
+  --sidebar-active-fg: #34d399;
+  /* Emerald 400 */
+
+  --card-bg: #064e3b;
+  /* Emerald 900 */
+  --border: #065f46;
+  /* Emerald 800 */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-sidebar-fg: var(--sidebar-fg);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-active-fg: var(--sidebar-active-fg);
+  --color-card-bg: var(--card-bg);
+  --color-border: var(--border);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  /* Smooth transition for theme switching */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Glassmorphism utility classes */
+.glass {
+  background: rgba(6, 78, 59, 0.6);
+  /* Emerald 900 tint */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+}
